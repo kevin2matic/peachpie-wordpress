@@ -7,24 +7,35 @@ This project demonstrates how to start an ASP.NET Core server, integrate WordPre
 
 Even though the project is noticeably small, it contains the entire WordPress CMS. How? This complex PHP web framework was already compiled into the .NET Standard library (see [wpdotnet-sdk](https://github.com/iolevel/wpdotnet-sdk) for more information) and packed into a NuGet package. This demo may just reference it.
 
-To find out more about PeachPie, check out our [resources](https://www.peachpie.io/resources), which includes tutorials, benchmarks and articles on PeachPie.
+To find out more about PeachPie, check out our [peachpie.io](https://www.peachpie.io/), which includes tutorials, benchmarks and articles on PeachPie.
+
+## Create MySQL database
+
+WordPress requires you to start your database server with a database in it. By default it expects a database server on localhost, port 3306, with a database named *"wordpress"*.
+
+You can use *docker* to quickly start a database server in virtual environment:
+```
+docker run -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=wordpress -p 3306:3306 -d mysql
+```
+
+# Configuration
+
+The configuration itself serves as a demonstration of combining a legacy PHP application with .NET. The demo takes advantage of the ASP.NET Core configuration mechanism, namely the files `appsettings.json`, `appsettings.deployment.json` and `appsettings.production.json`. This allows for having a different configuration for each environment without the need of altering the source code of the project.
+
+More on configuring WpDotNet on https://docs.peachpie.io/scenarios/wordpress/configuration/.
 
 # WordPress PHP Plugin
 
-With this approach it is finally possible to have a project containing only the plugin. WordPress itself is already compiled and the plugin has a dependency on it (like any other C# app you would make).
+With this approach it is possible to have a project containing only the plugin. WordPress itself is already compiled and the plugin has a dependency on it (like any other C# app you would make).
 
 The build process will do following:
-- compiles `.php` files within the `PeachPied.WordPress.MyPlugin` directory. Note that the path `wp-content/plugins` matters.
+- compiles `.php` files within the `MyContent` directory. The content is implicitly nested within `wp-content` subdirectory.
 - packs the compiled DLL together with content files (like images, scripts etc.) into a NuGet package.
 - copies the project content into the application output directory, together with WordPress content files extracted from its NuGet.
 
 # WordPress C# plugin
 
 The project takes advantage of the `WpDotNet SDK` which provides a C# abstraction `IWpPlugin`. Objects of this type can be passed to the WordPress middleware (see `UseWordPress`) and hook onto filters and actions available in the WordPress API.
-
-# Configuration
-
-The configuration itself serves as a demonstration of combining a legacy PHP application with .NET. The demo takes advantage of the ASP.NET Core configuration mechanism, namely the files `appsettings.json`, `appsettings.deployment.json` and `appsettings.production.json`. This allows for having a different configuration for each environment without the need of altering the source code of the project.
 
 # Sourceless Distribution
 
